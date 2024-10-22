@@ -117,11 +117,11 @@ bool RosbagReader::startStreaming() {
   std::vector<int> numCamImages(numCameras_, 0);
   std::vector<int> numDepthImages(numCameras_, 0);
   for(const auto & info : metadata.topics_with_message_count) {
-    if(info.topic_metadata.name.compare("/okvis/imu0") == 0) {
+    if(info.topic_metadata.name.compare("/alphasense/imu") == 0) {
       numImuMeasurements = info.message_count;
     }
     for(int i=0; i<int(numCameras_); ++i) {
-      if(info.topic_metadata.name.compare("/okvis/cam"+std::to_string(i)+"/image_raw") == 0) {
+      if(info.topic_metadata.name.compare("/alphasense/cam"+std::to_string(i)+"/image_raw") == 0) {
         numCamImages[i] = info.message_count;
         if(i==0) {
           numImages_ =  numCamImages[i];
@@ -184,7 +184,7 @@ void  RosbagReader::processing() {
     auto topic = serialized_message->topic_name;
     
     // check if IMU
-    if (topic.find("/okvis/imu0") != std::string::npos) {
+    if (topic.find("/alphasense/imu") != std::string::npos) {
       sensor_msgs::msg::Imu msg;
       rclcpp::Serialization<sensor_msgs::msg::Imu> serialization_info;
       serialization_info.deserialize_message(&extracted_serialized_msg, &msg);
@@ -204,7 +204,7 @@ void  RosbagReader::processing() {
     // check if image
     okvis::Time t_unsynced(0.0);
     for(int i=0; i<int(numCameras_); ++i) {
-      if (topic.find("/okvis/cam"+std::to_string(i)+"/image_raw") != std::string::npos) {
+      if (topic.find("/alphasense/cam"+std::to_string(i)+"/image_raw") != std::string::npos) {
         sensor_msgs::msg::Image msg;
         rclcpp::Serialization<sensor_msgs::msg::Image> serialization_info;
         serialization_info.deserialize_message(&extracted_serialized_msg, &msg);

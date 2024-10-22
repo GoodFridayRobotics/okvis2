@@ -1,0 +1,22 @@
+services:
+  base:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: okvis2:latest
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /home/dev/data:/data
+      - /media/dev/6330-3834/:/sdcard
+      - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
+      - ../../:/root/OKVIS2_ws
+      - /media/dev/PortableSSD4:/ssd_data
+    device_cgroup_rules:
+      - 'c 81:* rmw'
+      - 'c 189:* rmw'
+    network_mode: bridge
