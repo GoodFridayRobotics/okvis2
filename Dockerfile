@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y \
     libopencv-dev \
     libatlas-base-dev \
     libgoogle-glog-dev \
-    gdv \
+    gdb \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /root

@@ -1,0 +1,1 @@
+ros2 launch okvis okvis_node_subscriber.launch.xml config_filename:=src/okvis2/config/r4a_tripple.yaml

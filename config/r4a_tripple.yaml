@@ -1,0 +1,110 @@
+%YAML:1.0
+cameras:
+     #right camera, /tracking_front
+     - {T_SC:
+        [-0.00666736, 0.00065237, 0.99997756, 0.0305577, 
+         0.99989474, -0.01288199, 0.00667521, 0.01683913,
+         0.01288606, 0.99991681, -0.00056641, -0.00439179,
+         0,0,0,1.],
+        image_dimension: [1280, 800],
+        distortion_coefficients: [0.04521904999207441, 0.04093252080036277, -0.028516487541826886, 0.006077390594816995],
+        distortion_type: equidistant,
+        focal_length: [468.98040619359426, 468.8544998317947],
+        principal_point: [637.496318100534, 369.75333131991454],
+        camera_type: gray, #gray, rgb, gray+depth, rgb+depth
+        slam_use: okvis}
+     
+     #left camera, /tracking_rear
+     - {T_SC:
+        [ -0.8660381,  0.0000000, -0.4999780, -0.133, 
+            -0.4999780,  0.0000000, 0.8660381, 0.055,
+            0.0000000, 1.0000000,  0.0000000, 0.041,
+            0.0000000000000000000, 0.0000000000000000000, 0.0000000000000000000, 1.0000000000000000000],
+        image_dimension: [1280, 800],
+        distortion_coefficients: [0.0442, 0.0410, -0.0281, 0.0068],
+        distortion_type: equidistant,
+        focal_length: [470.422, 470.148],
+        principal_point: [652.701, 387.915],
+        camera_type: gray, #gray, rgb, gray+depth, rgb+depth
+        slam_use: okvis}
+
+     #upward camera, /tracking_down
+     - {T_SC:
+        [ 0.8660381,  0.0000000, -0.4999780, -0.134, 
+            -0.4999780,  0.0000000, -0.8660381, -0.093,
+            0.0000000, 1.0000000,  0.0000000, 0.041,
+            0.0000000000000000000, 0.0000000000000000000, 0.0000000000000000000, 1.0000000000000000000],
+        image_dimension: [1280, 800],
+        distortion_coefficients: [0.0404, 0.0575, -0.0407, 0.0101],
+        distortion_type: equidistant,
+        focal_length: [466.158, 465.881],
+        principal_point: [685.518, 391.768],
+        camera_type: gray, #gray, rgb, gray+depth, rgb+depth
+        slam_use: okvis}
+
+
+# additional camera parameters
+camera_parameters:
+    timestamp_tolerance: 0.0035068605940155686 # [s] stereo frame out-of-sync tolerance
+    image_delay: 0.0035068605940155686  # [s] timestamp_camera_correct = timestamp_camera - image_delay
+    sync_cameras: [0] # the cameras that will be synchronised
+    online_calibration: # some parameters to set the online 
+        do_extrinsics: true # Do we online-calibrate extrinsics?
+        do_extrinsics_final_ba: true # Do we calibrate extrinsics in final BA?
+        sigma_r: 0.001 # T_SCi position prior stdev [m]
+        sigma_alpha: 0.01 # T_SCi orientation prior stdev [rad]
+
+
+imu_parameters:
+    use: true
+    a_max: 176.0 # acceleration saturation [m/s^2]
+    g_max: 10.0 # gyro saturation [rad/s]
+    sigma_g_c: 0.0002444351257197984 # gyro noise density [rad/s/sqrt(Hz)]
+    sigma_a_c: 0.02855544931738909 # accelerometer noise density [m/s^2/sqrt(Hz)]
+    sigma_bg: 0.03 # gyro bias prior [rad/s]
+    sigma_ba: 0.0252 # accelerometer bias prior [m/s^2]
+    sigma_gw_c: 3.337348319684385e-05 # gyro drift noise density [rad/s^s/sqrt(Hz)]
+    sigma_aw_c: 0.00032369994691723954 # accelerometer drift noise density [m/s^2/sqrt(Hz)]
+    # Local gravity at 85748 Garching, Germany (latitude: 48.262768, elevation: 481m), according to https://www.sensorsone.com/local-gravity-calculator/
+    g: 9.81007 # Earth's acceleration due to gravity [m/s^2]
+    g0: [ 0.0, 0.0, 0.0 ] # initial gyro bias [rad/s]
+    a0: [0.237891675418656, 0.167477259386443, 0.242558311983621]  # initial accelerometer bias [m/s^2]
+    # tranform Body-Sensor (IMU)
+    T_BS:
+        [1.0000, 0.0000, 0.0000, 0.0000,
+         0.0000, 1.0000, 0.0000, 0.0000,
+         0.0000, 0.0000, 1.0000, 0.0000,
+         0.0000, 0.0000, 0.0000, 1.0000]
+
+# frontend: detection etc. 
+frontend_parameters:
+    detection_threshold: 38.0 #42.0 # detection threshold. By default the uniformity radius in pixels
+    absolute_threshold: 150.0 # absolute Harris corner threshold (noise floor)
+    matching_threshold: 60.0 # BRISK descriptor matching threshold
+    octaves: 0 # number of octaves for detection. 0 means single-scale at highest resolution
+    max_num_keypoints: 700 # restrict to a maximum of this many keypoints per image (strongest ones)
+    keyframe_overlap: 0.59 # minimum field-of-view overlap
+    use_cnn: false # use the CNN (if available) to filter out dynamic content / sky
+    parallelise_detection: true # Run parallel detect & describe.
+    num_matching_threads: 4 # Parallelise matching with this number of threads.
+
+# estimator parameters
+estimator_parameters:
+    num_keyframes: 5 # number of keyframes in optimisation window
+    num_loop_closure_frames: 5 # number of loop closure frames in optimisation window
+    num_imu_frames: 3 # number of frames linked by most recent nonlinear IMU error terms
+    do_loop_closures: true # whether to do VI-SLAM or VIO
+    do_final_ba: true # Whether to run a full final BA
+    enforce_realtime: false # whether to limit the time budget for optimisation 
+    realtime_min_iterations: 3 # minimum number of iterations always performed
+    realtime_max_iterations: 10 # never do more than these, even if not converged
+    realtime_time_limit: 0.035 # time budget for realtime optimisation [s]
+    realtime_num_threads: 4 # number of threads for the realtime optimisation
+    full_graph_iterations: 15 # don't do more than these for the full (background) optimisation
+    full_graph_num_threads: 2 # number of threads for the full (background) optimisation
+
+# some options for how and what to output
+output_parameters:
+    display_matches: true  # displays debug video and matches. May be slow.
+    display_overhead: true # debug overhead image. Is slow.
+

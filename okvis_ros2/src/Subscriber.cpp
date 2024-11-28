@@ -39,6 +39,7 @@
  
 #include <glog/logging.h>
 #include <okvis/ros2/Subscriber.hpp>
+#include <rclcpp/qos.hpp>
 
 #define OKVIS_THRESHOLD_SYNC 0.01 ///< Sync threshold in seconds.
 
@@ -74,12 +75,17 @@ void Subscriber::setNodeHandle(std::shared_ptr<rclcpp::Node> node)
   // set up callbacks
   for (size_t i = 0; i < parameters_.nCameraSystem.numCameras(); ++i) {
     imageSubscribers_[i] = imgTransport_->subscribe(
-        "/okvis/cam" + std::to_string(i) +"/image_raw",
+        "/r4c/cam" + std::to_string(i) +"/image_raw",
         30 * parameters_.nCameraSystem.numCameras(),
         std::bind(&Subscriber::imageCallback, this, std::placeholders::_1, i));
   }
 
-  subImu_ = node_->create_subscription<sensor_msgs::msg::Imu>("/okvis/imu0", 1000, 
+  auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_sensor_data))
+              .best_effort();
+
+  subImu_ = node_->create_subscription<sensor_msgs::msg::Imu>(
+      "/imu_apps",
+      qos,
       std::bind(&Subscriber::imuCallback, this, std::placeholders::_1));
 }
 

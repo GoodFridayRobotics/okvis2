@@ -15,7 +15,7 @@ services:
       - /media/dev/6330-3834/:/sdcard
       - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
       - ../../:/root/OKVIS2_ws
-      - /media/dev/PortableSSD4:/ssd_data
+      - /media/dev/PortableSSD5:/ssd_data
     device_cgroup_rules:
       - 'c 81:* rmw'
       - 'c 189:* rmw'
