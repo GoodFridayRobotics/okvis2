@@ -75,7 +75,7 @@ void Subscriber::setNodeHandle(std::shared_ptr<rclcpp::Node> node)
   // set up callbacks
   for (size_t i = 0; i < parameters_.nCameraSystem.numCameras(); ++i) {
     imageSubscribers_[i] = imgTransport_->subscribe(
-        "/r4c/cam" + std::to_string(i) +"/image_raw",
+        "/okvis/cam" + std::to_string(i) +"/image_raw",
         30 * parameters_.nCameraSystem.numCameras(),
         std::bind(&Subscriber::imageCallback, this, std::placeholders::_1, i));
   }
