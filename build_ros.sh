@@ -1,0 +1,1 @@
+colcon build --cmake-args -DUSE_NN=OFF -DHAVE_LIBREALSENSE=OFF -DCMAKE_BUILD_TYPE=Release
